@@ -15,15 +15,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gradle Manually
-        run: |
-          wget https://services.gradle.org/distributions/gradle-8.4-bin.zip
-          unzip gradle-8.4-bin.zip
-          sudo mv gradle-8.4 /opt/gradle
-          echo "/opt/gradle/bin" >> $GITHUB_PATH
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: Compile APK
-        run: gradle :app:assembleRelease
+      - name: Build with Gradle Wrapper
+        run: ./gradlew assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

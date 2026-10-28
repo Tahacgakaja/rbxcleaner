@@ -7,11 +7,11 @@
         tools:ignore="ScopedStorage"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage"/>
-<application>
-    tools:replace="android:icon"
-    android:allowBackup="false"
-    android:theme="@style/Theme.Material3.DayNight">
 
+    <application
+        tools:replace="android:icon"
+        android:allowBackup="false"
+        android:theme="@style/Theme.Material3.DayNight">
 
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
@@ -27,5 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-    <application
+
+    </application>
+
 </manifest>

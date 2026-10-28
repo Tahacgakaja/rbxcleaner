@@ -15,12 +15,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download Gradle Wrapper files
+      - name: Create Gradle Wrapper Manually
         run: |
-          gradle wrapper --gradle-version 8.4
+          gradle init --type basic --automation-language groovy --dsl groovy --test-framework none --project-name rbxcleaner --no-incubating || true
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew || true
 
       - name: Build APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease || gradle assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

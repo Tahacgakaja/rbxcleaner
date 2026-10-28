@@ -9,7 +9,6 @@
         tools:ignore="ScopedStorage"/>
 
     <application
-        tools:replace="android:icon"
         android:allowBackup="false"
         android:theme="@style/Theme.Material3.DayNight">
 

@@ -23,53 +23,71 @@ class Wiper(private val ctx: Context) {
         WipeTargets.paths.forEach { shredPath(it) }
 
         // 3. varre Downloads/Documents por keyword
-        listOf("/sdcard/Download", "/sdcard/Documents").forEach { base ->
-            File(base).walkTopDown().forEach { f ->
-                if (f.isFile && WipeTargets.keywords.any {
-                        f.name.lowercase().contains(it) }) {
-                    shred(f)
+        listOf("/sdcard/Download/", "/sdcard/Documents/").forEach { base ->
+            val dir = File(base)
+            if (dir.exists() && dir.isDirectory) {
+                dir.walkTopDown().forEach { f ->
+                    if (f.isFile && WipeTargets.keywords.any { 
+                        f.name.lowercase().contains(it) 
+                    }) {
+                        shred(f)
+                    }
                 }
             }
         }
 
-        // 4. limpa cache do Roblox (NÃO desinstala, só o cache onde o Delta injeta)
+        // 4. Limpa cache do Roblox (NÃO desinstala, só o cache onde o Delta injeta)
         ShizukuRunner.exec("pm clear com.roblox.client")
         step("roblox cache clear OK")
 
-        // 5. logcat
+        // 5. Limpa dados e histórico do Chrome (Protege contra vestígios de pesquisa)
+        ShizukuRunner.exec("pm clear com.android.chrome")
+        step("Chrome history & cache limpos!")
+
+        // 6. Limpa cache de pesquisa rápida do Google (My Activity local)
+        ShizukuRunner.exec("pm clear com.google.android.googlequicksearchbox")
+        step("Google search cache limpo!")
+
+        // 7. logcat
         ShizukuRunner.exec("logcat -c")
         step("logcat zerado")
 
-        // 6. recent tasks
-        ShizukuRunner.exec("am stack list; input keyevent KEYCODE_APP_SWITCH; " +
-                "sleep 1; am kill-all")
+        // 8. recent tasks
+        ShizukuRunner.exec("am stack list; input keyevent KEYCODE_APP_SWITCH; sleep 1; am kill-all")
         step("recents limpas")
 
-        // 7. MediaStore — força rescan pra sumir referências
+        // 9. MediaStore - força rescan pra sumir referências
         ShizukuRunner.exec(
             "content delete --uri content://media/external/file " +
-            "--where \"_data LIKE '%delta%' OR _data LIKE '%exploit%'\""
+            "--where \"_data LIKE '%Delta%' OR _data LIKE '%exploit%'\""
         )
         step("MediaStore purgado")
 
-        // 8. clipboard
+        // 10. clipboard
         ShizukuRunner.exec("service call clipboard 2")
         step("clipboard limpo")
 
-        // 9. DNS cache
-        ShizukuRunner.exec("ndc resolver clearnetdns wlan0")
+        // 11. DNS cache
+        ShizukuRunner.exec("ndc resolver cleardns wlan0")
+        step("DNS cache limpo")
 
-        step("== WIPE concluído ==")
+        step("== WIPE concluido ==")
         return log.toString()
     }
 
     private fun shredPath(path: String) {
         val f = File(path)
-        if (!f.exists()) { step("skip $path"); return }
-        if (f.isDirectory) f.walkBottomUp().forEach { if (it.isFile) shred(it) }
-        else shred(f)
-        ShizukuRunner.exec("rm -rf \"$path\"")
-        step("shred $path")
+        if (!f.exists()) {
+            step("skip $path: not found")
+            return
+        }
+        if (f.isDirectory) {
+            f.walkBottomUp().forEach { if (it.isFile) shred(it) }
+            f.delete()
+            step("dir removed $path")
+        } else {
+            shred(f)
+        }
     }
 
     private fun shred(file: File) {
@@ -82,7 +100,7 @@ class Wiper(private val ctx: Context) {
                     // 3 passadas: random, zeros, random
                     repeat(3) { pass ->
                         raf.seek(0)
-                        written = 0
+                        written = 0L
                         while (written < len) {
                             if (pass == 1) buf.fill(0) else Random.nextBytes(buf)
                             val toWrite = minOf(buf.size.toLong(), len - written).toInt()
@@ -94,8 +112,13 @@ class Wiper(private val ctx: Context) {
                 }
             }
             file.delete()
-        } catch (e: Exception) { step("shred fail ${file.name}: ${e.message}") }
+            step("shred ok: ${file.name}")
+        } catch (e: Exception) {
+            step("shred fail (${file.name}): ${e.message}")
+        }
     }
 
-    private fun step(s: String) { log.appendLine(s) }
+    private fun step(s: String) {
+        log.appendLine(s)
+    }
 }

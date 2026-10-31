@@ -1,7 +1,7 @@
 package com.rbx.cleaner
 
 object WipeTargets {
-    // caminhos conhecidos que Delta e variantes deixam
+    // Caminhos conhecidos que Delta, variantes e rastros de navegador deixam
     val paths = listOf(
         "/sdcard/Delta",
         "/sdcard/Download/Delta.apk",
@@ -10,17 +10,10 @@ object WipeTargets {
         "/sdcard/Android/data/com.delta.executor",
         "/sdcard/Android/data/com.deltaexploits.deltax",
         "/sdcard/Android/media/com.roblox.client/.delta",
-        "/data/local/tmp/delta",
-        "/sdcard/DCIM/.thumbnails",
-        "/sdcard/Pictures/.thumbnails"
+        // Alvos de histórico e cache do Chrome e Google
+        "/data/data/com.android.chrome/app_chrome/Default/History",
+        "/data/data/com.android.chrome/app_chrome/Default/Visited Links",
+        "/data/data/com.android.chrome/cache/",
+        "/data/data/com.google.android.googlequicksearchbox/cache/"
     )
-
-    val packages = listOf(
-        "com.delta.executor",
-        "com.deltaexploits.deltax",
-        "com.delta.android"
-    )
-
-    // palavras-chave pra varrer Downloads/Documents
-    val keywords = listOf("delta", "exploit", "executor", "dex", "lua", "rbxlx")
 }

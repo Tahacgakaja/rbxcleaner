@@ -36,15 +36,15 @@ class Wiper(private val ctx: Context) {
             }
         }
 
-        // 4. Limpa cache do Roblox (NÃO desinstala, só o cache onde o Delta injeta)
+        // 4. Limpa cache do Roblox
         ShizukuRunner.exec("pm clear com.roblox.client")
         step("roblox cache clear OK")
 
-        // 5. Limpa dados e histórico do Chrome (Protege contra vestígios de pesquisa)
+        // 5. Limpa dados e histórico do Chrome
         ShizukuRunner.exec("pm clear com.android.chrome")
         step("Chrome history & cache limpos!")
 
-        // 6. Limpa cache de pesquisa rápida do Google (My Activity local)
+        // 6. Limpa cache de pesquisa do Google
         ShizukuRunner.exec("pm clear com.google.android.googlequicksearchbox")
         step("Google search cache limpo!")
 
@@ -56,7 +56,7 @@ class Wiper(private val ctx: Context) {
         ShizukuRunner.exec("am stack list; input keyevent KEYCODE_APP_SWITCH; sleep 1; am kill-all")
         step("recents limpas")
 
-        // 9. MediaStore - força rescan pra sumir referências
+        // 9. MediaStore
         ShizukuRunner.exec(
             "content delete --uri content://media/external/file " +
             "--where \"_data LIKE '%Delta%' OR _data LIKE '%exploit%'\""
@@ -97,7 +97,6 @@ class Wiper(private val ctx: Context) {
                 RandomAccessFile(file, "rw").use { raf ->
                     val buf = ByteArray(4096)
                     var written = 0L
-                    // 3 passadas: random, zeros, random
                     repeat(3) { pass ->
                         raf.seek(0)
                         written = 0L
